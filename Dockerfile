@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #  THE SOFTWARE.
 
-FROM openjdk:8-jdk
+FROM openjdk:8-jre-slim-stretch
 LABEL MAINTAINER="Nicolas De Loof <nicolas.deloof@gmail.com>"
 
 ARG user=jenkins
@@ -53,4 +53,45 @@ COPY setup-sshd /usr/local/bin/setup-sshd
 
 EXPOSE 22
 
-ENTRYPOINT ["setup-sshd"]
+# Install few tools, including git from backports
+ENV DOCKER_VERSION 1.12.6
+
+RUN ( \
+      echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
+      apt-get update && \
+      apt-get -y install -t stretch-backports git && \
+      apt-get -y install net-tools python bzip2 lbzip2 jq netcat-openbsd rsync curl wget && \
+      rm -rf /var/lib/apt/lists/* && \
+      curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_VERSION.tgz && \
+      tar --strip-components=1 -xvzf docker-$DOCKER_VERSION.tgz -C /usr/bin )
+
+# Provide docker group and make the executable accessible (ids from CoreOS & Debian)
+RUN ( \
+        groupadd -g 233 docker && \
+        groupadd -g 999 docker2 && \
+        usermod -a -G docker,docker2 "${user}" && \
+        chown root:docker /usr/bin/docker \
+    )
+
+# bash as default shell
+RUN ( \
+        echo "dash dash/sh boolean false" | debconf-set-selections && \
+        DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash \
+    )
+
+# Add Tini
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /opt/tini/tini
+RUN chmod +x /opt/tini/tini
+VOLUME /opt/tini
+ENTRYPOINT ["/opt/tini/tini", "--", "/usr/local/bin/setup-sshd"]
+
+# encaps
+RUN ( \
+        cd /usr/bin && \
+        wget https://github.com/swi-infra/jenkins-docker-encaps/archive/master.zip && \
+        unzip master.zip && \
+        mv jenkins-docker-encaps-master/encaps* . && \
+        rm -rf master.zip jenkins-docker-encaps-master \
+    )
+
