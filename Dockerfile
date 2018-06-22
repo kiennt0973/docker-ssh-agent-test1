@@ -64,7 +64,10 @@ RUN ( \
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
       apt-get update && \
       apt-get -y install docker-ce && \
-      rm -rf /var/lib/apt/lists/* )
+      rm -rf /var/lib/apt/lists/* && \
+      groupadd -g 233 docker2 && \
+      usermod -a -G docker,docker2 "${user}" \
+      )
 
 # bash as default shell
 RUN ( \
