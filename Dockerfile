@@ -54,24 +54,17 @@ COPY setup-sshd /usr/local/bin/setup-sshd
 EXPOSE 22
 
 # Install few tools, including git from backports
-ENV DOCKER_VERSION 1.12.6
-
 RUN ( \
       echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
       apt-get update && \
       apt-get -y install -t stretch-backports git && \
-      apt-get -y install net-tools python bzip2 lbzip2 jq netcat-openbsd rsync curl wget && \
-      rm -rf /var/lib/apt/lists/* && \
-      curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-$DOCKER_VERSION.tgz && \
-      tar --strip-components=1 -xvzf docker-$DOCKER_VERSION.tgz -C /usr/bin )
-
-# Provide docker group and make the executable accessible (ids from CoreOS & Debian)
-RUN ( \
-        groupadd -g 233 docker && \
-        groupadd -g 999 docker2 && \
-        usermod -a -G docker,docker2 "${user}" && \
-        chown root:docker /usr/bin/docker \
-    )
+      apt-get -y install net-tools python bzip2 lbzip2 jq netcat-openbsd rsync curl wget \
+                         apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
+      curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+      add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
+      apt-get update && \
+      apt-get -y install docker-ce && \
+      rm -rf /var/lib/apt/lists/* )
 
 # bash as default shell
 RUN ( \
