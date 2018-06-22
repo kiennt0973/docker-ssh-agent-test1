@@ -48,8 +48,8 @@ if [[ $# -gt 0 ]]; then
   fi
 fi
 
-
 # ensure variables passed to docker container are also exposed to ssh sessions
+unset JENKINS_SLAVE_SSH_PUBKEY
 env | grep _ >> /etc/environment
 
 ssh-keygen -A
