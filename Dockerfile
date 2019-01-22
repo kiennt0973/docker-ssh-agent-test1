@@ -82,12 +82,20 @@ RUN chmod +x /opt/tini/tini
 VOLUME /opt/tini
 ENTRYPOINT ["/opt/tini/tini", "--", "/usr/local/bin/setup-sshd"]
 
-# encaps
+# Add encaps
 RUN ( \
         cd /usr/bin && \
         wget https://github.com/swi-infra/jenkins-docker-encaps/archive/master.zip && \
         unzip master.zip && \
         mv jenkins-docker-encaps-master/encaps* . && \
         rm -rf master.zip jenkins-docker-encaps-master \
+    )
+
+# Add Agent
+ARG VERSION=3.28
+RUN ( \
+        curl --create-dirs -fsSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+        && chmod 755 /usr/share/jenkins \
+        && chmod 644 /usr/share/jenkins/slave.jar \
     )
 
