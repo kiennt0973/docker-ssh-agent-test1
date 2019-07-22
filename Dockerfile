@@ -58,7 +58,7 @@ RUN ( \
       echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
       apt-get update && \
       apt-get -y install -t stretch-backports git && \
-      apt-get -y install net-tools python bzip2 lbzip2 jq netcat-openbsd rsync curl wget \
+      apt-get -y install net-tools python bzip2 lbzip2 unzip jq netcat-openbsd rsync curl wget \
                          apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
       curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
@@ -72,7 +72,8 @@ RUN ( \
 # bash as default shell
 RUN ( \
         echo "dash dash/sh boolean false" | debconf-set-selections && \
-        DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash \
+        mkdir -p /usr/share/man/man1/ && \
+        dpkg-reconfigure -p critical dash \
     )
 
 # Add Tini
