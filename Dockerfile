@@ -57,7 +57,7 @@ EXPOSE 22
 RUN ( \
       echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
       apt-get update && \
-      apt-get -y install -t stretch-backports git && \
+      apt-get -y install -t stretch-backports git git-lfs && \
       apt-get -y install net-tools python bzip2 lbzip2 unzip jq netcat-openbsd rsync curl wget \
                          apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
       curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
