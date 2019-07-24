@@ -58,7 +58,7 @@ RUN ( \
       echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
       apt-get update && \
       apt-get -y install -t stretch-backports git git-lfs && \
-      apt-get -y install net-tools python bzip2 lbzip2 unzip jq netcat-openbsd rsync curl wget \
+      apt-get -y install net-tools python bzip2 lbzip2 unzip netcat-openbsd rsync curl wget \
                          apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
       curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
@@ -80,6 +80,9 @@ RUN ( \
 ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /opt/tini/tini
 RUN chmod +x /opt/tini/tini
+
+# jq v1.6 to support --rawfile
+RUN curl -fsSL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o /usr/bin/jq && chmod +x /usr/bin/jq
 VOLUME /opt/tini
 ENTRYPOINT ["/opt/tini/tini", "--", "/usr/local/bin/setup-sshd"]
 
