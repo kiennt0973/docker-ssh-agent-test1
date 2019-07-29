@@ -51,6 +51,9 @@ WORKDIR "${JENKINS_AGENT_HOME}"
 
 COPY setup-sshd /usr/local/bin/setup-sshd
 
+# Add java to default PATH
+RUN ln -sf $(which java) /usr/bin/java
+
 EXPOSE 22
 
 # Install few tools, including git from backports
