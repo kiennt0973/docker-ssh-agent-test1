@@ -46,9 +46,6 @@ RUN sed -i /etc/ssh/sshd_config \
         -e 's/#LogLevel.*/LogLevel INFO/' && \
     mkdir /var/run/sshd
 
-VOLUME "${JENKINS_AGENT_HOME}" "/tmp" "/run" "/var/run"
-WORKDIR "${JENKINS_AGENT_HOME}"
-
 COPY setup-sshd /usr/local/bin/setup-sshd
 
 # Add java to default PATH
@@ -105,5 +102,8 @@ RUN ( \
         curl --create-dirs -fsSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
         && chmod 755 /usr/share/jenkins \
         && chmod 644 /usr/share/jenkins/slave.jar \
+        && ln -sf /usr/share/jenkins/slave.jar /home/jenkins/remoting.jar \
     )
 
+VOLUME "${JENKINS_AGENT_HOME}" "/tmp" "/run" "/var/run"
+WORKDIR "${JENKINS_AGENT_HOME}"
