@@ -34,7 +34,7 @@ ENV JENKINS_AGENT_HOME ${JENKINS_AGENT_HOME}
 RUN groupadd -g ${gid} ${group} \
     && useradd -d "${JENKINS_AGENT_HOME}" -u "${uid}" -g "${gid}" -m -s /bin/bash "${user}"
 
-# setup SSH server
+# Setup SSH server
 RUN apt-get update \
     && apt-get install --no-install-recommends -y openssh-server \
     && rm -rf /var/lib/apt/lists/*
@@ -61,8 +61,9 @@ RUN ( \
       echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
       apt-get update && \
       apt-get -y install -t stretch-backports git git-lfs && \
-      apt-get -y install net-tools python bzip2 lbzip2 unzip netcat-openbsd rsync curl wget \
-                         apt-transport-https ca-certificates curl gnupg2 software-properties-common && \
+      apt-get -y install net-tools python bzip2 lbzip2 unzip netcat-openbsd rsync wget \
+                         apt-transport-https ca-certificates curl gnupg2 software-properties-common \
+                         iproute2 && \
       curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
       apt-get update && \
