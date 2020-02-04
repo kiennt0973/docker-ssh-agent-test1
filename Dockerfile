@@ -60,7 +60,7 @@ RUN ( \
       apt-get -y install -t stretch-backports git git-lfs && \
       apt-get -y install net-tools python bzip2 lbzip2 unzip netcat-openbsd rsync wget \
                          apt-transport-https ca-certificates curl gnupg2 software-properties-common \
-                         iproute2 && \
+                         iproute2 iputils-ping && \
       curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
       apt-get update && \
