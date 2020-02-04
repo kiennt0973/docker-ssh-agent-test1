@@ -97,7 +97,7 @@ RUN ( \
     )
 
 # Add Agent
-ARG VERSION=3.35
+ARG VERSION=4.1
 RUN ( \
         curl --create-dirs -fsSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
         && chmod 755 /usr/share/jenkins \
