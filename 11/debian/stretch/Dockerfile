@@ -60,14 +60,15 @@ RUN ( \
       apt-get -y install -t stretch-backports git git-lfs && \
       apt-get -y install net-tools python bzip2 lbzip2 unzip netcat-openbsd rsync wget \
                          apt-transport-https ca-certificates curl gnupg2 software-properties-common \
-                         iproute2 iputils-ping && \
+                         iproute2 iputils-ping && \ 
       curl -fsSSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
       apt-get update && \
       apt-get -y install docker-ce && \
       rm -rf /var/lib/apt/lists/* && \
       groupadd -g 233 docker2 && \
-      usermod -a -G docker,docker2 "${user}" \
+      groupadd -g 998 docker3 && \
+      usermod -a -G docker,docker2,docker3 "${user}" \
       )
 
 # bash as default shell
