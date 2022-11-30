@@ -68,7 +68,8 @@ RUN ( \
       rm -rf /var/lib/apt/lists/* && \
       groupadd -g 233 docker2 && \
       groupadd -g 998 docker3 && \
-      usermod -a -G docker,docker2,docker3 "${user}" \
+      groupadd -g 122 docker4 && \
+      usermod -a -G docker,docker2,docker3,docker4 "${user}" \
       )
 
 # bash as default shell
@@ -80,11 +81,16 @@ RUN ( \
 
 # Add Tini
 ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /opt/tini/tini
+RUN mkdir -p /opt/tini
+RUN ( \
+    wget https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture) \
+    -O /opt/tini/tini \
+)
 RUN chmod +x /opt/tini/tini
 
-# jq v1.6 to support --rawfile
-RUN curl -fsSL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o /usr/bin/jq && chmod +x /usr/bin/jq
+# custom jq with support for --rawfile
+RUN curl -fsSL https://github.com/swi-infra/jq/releases/download/v0.2.8/jq-$(dpkg --print-architecture) -o /usr/bin/jq && \
+    chmod +x /usr/bin/jq
 VOLUME /opt/tini
 ENTRYPOINT ["/opt/tini/tini", "--", "/usr/local/bin/setup-sshd"]
 
